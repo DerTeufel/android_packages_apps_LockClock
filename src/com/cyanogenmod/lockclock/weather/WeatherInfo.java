@@ -45,6 +45,7 @@ public class WeatherInfo {
     private int windDirection;
     private String speedUnit;
     private long timestamp;
+    private int weatherIconNa;
 
     public WeatherInfo(Context context,
             String city, String fdate, String condition, int conditionCode,
@@ -67,16 +68,34 @@ public class WeatherInfo {
     }
 
     public int getConditionResource() {
-        boolean alternativeIcons = Preferences.useAlternateWeatherIcons(mContext);
-        final String prefix = alternativeIcons ? "weather2_" : "weather_";
+	int mWeatherStyleIcons = Integer.parseInt(mSharedPrefs.getString(Constants.WEATHER_ICON_STYLE, "0"));
         final Resources res = mContext.getResources();
-        final int resId = res.getIdentifier(prefix + conditionCode, "drawable", mContext.getPackageName());
+        String condition_filename;
+        if (mWeatherStyleIcons == 1) {
+            condition_filename = "weather_fancy_" + conditionCode;
+            weatherIconNa = R.drawable.weather_fancy_na;
+        } else if (mWeatherStyleIcons == 2) {
+            condition_filename = "weather_white_highres_" + conditionCode;
+            weatherIconNa = R.drawable.weather_white_highres_na;
+        } else if (mWeatherStyleIcons == 3) {
+            condition_filename = "weather_cm_" + conditionCode;
+            weatherIconNa = R.drawable.weather_cm_na;
+        } else if (mWeatherStyleIcons == 4) {
+            condition_filename = "weather_color_" + conditionCode;
+            weatherIconNa = R.drawable.weather_color_na;
+        } else {
+            condition_filename = "weather_" + conditionCode;
+            weatherIconNa = R.drawable.weather_na;
+        }
+        //boolean alternativeIcons = Preferences.useAlternateWeatherIcons(mContext);
+        //final String prefix = alternativeIcons ? "weather2_" : "weather_";
+        final int resId = res.getIdentifier(condition_filename, "drawable", mContext.getPackageName());
 
         if (resId != 0) {
             return resId;
         }
 
-        return alternativeIcons ? R.drawable.weather2_na : R.drawable.weather_na;
+        return weatherIconNa;
     }
 
     public String getCity() {

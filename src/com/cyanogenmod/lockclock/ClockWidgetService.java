@@ -60,6 +60,7 @@ public class ClockWidgetService extends IntentService {
 
     private int[] mWidgetIds;
     private AppWidgetManager mAppWidgetManager;
+    private SharedPreferences mSharedPrefs;
     private boolean mRefreshCalendar;
 
     public ClockWidgetService() {
@@ -73,6 +74,7 @@ public class ClockWidgetService extends IntentService {
         ComponentName thisWidget = new ComponentName(this, ClockWidgetProvider.class);
         mAppWidgetManager = AppWidgetManager.getInstance(this);
         mWidgetIds = mAppWidgetManager.getAppWidgetIds(thisWidget);
+	mSharedPrefs = mContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
 
         mRefreshCalendar = false;
     }
@@ -304,12 +306,14 @@ public class ClockWidgetService extends IntentService {
      * There is no data to display, display 'empty' fields and the 'Tap to reload' message
      */
     private void setNoWeatherData(RemoteViews weatherViews) {
-        boolean defaultIcons = !Preferences.useAlternateWeatherIcons(this);
+        //boolean defaultIcons = !Preferences.useAlternateWeatherIcons(this);
         final Resources res = getBaseContext().getResources();
 
         // Weather Image - Either the default or alternate set
-        weatherViews.setImageViewResource(R.id.weather_image,
-                defaultIcons ? R.drawable.weather_na : R.drawable.weather2_na);
+        //weatherViews.setImageViewResource(R.id.weather_image,
+                //defaultIcons ? R.drawable.weather_na : R.drawable.weather2_na);
+
+	weatherViews.setImageViewResource(R.id.weather_image, w.getConditionResource());
 
         // Rest of the data
         weatherViews.setTextViewText(R.id.weather_city, res.getString(R.string.weather_no_data));
